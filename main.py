@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 from discord import app_commands
 from discord.ext import commands, tasks
 from itertools import cycle
+from random import choice
 import yt_dlp
 import wavelink
-from wavelink.ext import spotify
+# from wavelink.ext import spotify
 
 load_dotenv()
 TOKEN: Final[str]=os.getenv("DISCORD_TOKEN")
@@ -45,8 +46,13 @@ async def on_ready() -> None:
         logs.close()
 
 @bot.event
-async def on_wavelink_track_end(player:wavelink.Player, track:wavelink.YouTubeTrack,reason) -> None:
-    return
+async def on_message(message) -> None:
+    if bot.user.mention in message.content.split():
+        resp=choice(["What's up?","Sup?", "Just type /help", "You need something?", "I have commands didn't you know?","Type /help","Do you need help?","What can I do for you?","Is something I can do for you?","On your service.","On your disposal","Random fun fact: A cloud weighs around a million tonnes"])
+        await message.channel.send(resp)
+# @bot.event
+# async def on_wavelink_track_end(player:wavelink.Player, track:wavelink.YouTubeTrack,reason) -> None:
+#     return
 
 @bot.tree.command(name="ping", description="Sends ping")
 async def ping(interaction: discord.Interaction) -> None:
