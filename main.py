@@ -17,12 +17,24 @@ load_dotenv()
 TOKEN: Final[str]=os.getenv("DISCORD_TOKEN")
 
 status = cycle(['/help',
-                'Tutel!',
-                'I have kids in my basement...'
+                'I have kittens in my basement...',
                 'War Thunder',
                 'Gaming!',
+                ':3',
                 'Credits to SovietCosmoCat',
-                'Chilling'
+                'Chilling',
+                '/help',
+                'Waltuh',
+                'OwO',
+                'Eat vegetables',
+                'I love cats',
+                '/help',
+                '>//<',
+                'Meow',
+                'Let\'s go!',
+                'Am I in space?',
+                '<3'
+
         ])
 
 intents=discord.Intents.default()
@@ -77,37 +89,45 @@ async def info(interaction: discord.Interaction, member: discord.Member) -> None
 
 @bot.tree.command(name="spam", description="Spams a message")
 @app_commands.describe(message="The message to spam")
-@commands.has_permissions(administrator = True)
 async def spam(interaction: discord.Interaction, message: str, amount: int) -> None:
+    if interaction.permissions.administrator:
         await interaction.response.send_message(f'SPAM ON THE WAY', ephemeral=True)
         for i in range(amount): await interaction.channel.send(message)
-
+    else:
+        await interaction.response.send_message(f'Operation not permited', ephemeral=True)
 
 @bot.tree.command(name="dm", description="The direct message to user")
 @app_commands.describe(message="The direct message to user")
 async def dm(interaction: discord.Interaction,member: discord.Member, message: str):
-    author=interaction.user
-    interaction.user = member
-    await interaction.user.send(message)
-    await interaction.user.send(f'Message sent by {author} from {interaction.guild}')
-    await interaction.response.send_message(f'Message sent to user', ephemeral=True)
+    if member.guild_permissions.manage_guild:
+        author=interaction.user
+        interaction.user = member
+        await interaction.user.send(message)
+        await interaction.user.send(f'Message sent by {author} from {interaction.guild}')
+        await interaction.response.send_message(f'Message sent to user', ephemeral=True)
+    else:
+        await interaction.response.send_message(f'Operation not permited', ephemeral=True)
+
 
 @bot.tree.command(name="anondm", description="The anonymouse direct message to user")
 @app_commands.describe(message="The direct message to user")
-@commands.has_permissions(administrator = True)
 
 async def anondmdm(interaction: discord.Interaction,member: discord.Member, message: str):
-    interaction.user = member
-    await interaction.user.send(message)
-    await interaction.response.send_message(f'Message sent to user', ephemeral=True)
-
+    if interaction.permissions.administrator:
+        interaction.user = member
+        await interaction.user.send(message)
+        await interaction.response.send_message(f'Message sent to user', ephemeral=True)
+    else:
+        await interaction.response.send_message(f'Operation not permited', ephemeral=True)
 
 
 @bot.tree.command(name="clear", description="Deletes messages")
 @commands.has_permissions(administrator = True, )
 async def clear(ctx, amount: int) -> None:
-    await ctx.channel.purge(limit=amount)
-    # await discord.InteractionResponse.send_message(f'Deleted {amount} messages', ephemeral=True)
+    if discord.Permissions.administrator or discord.Permissions.manage_messages or discord.Permissions.manage_guild:
+        await ctx.channel.purge(limit=amount)
+    else:
+        await ctx.channel.send(f'Operation not permited', ephemeral=True)
 
 @bot.tree.command(name="help")
 async def help(interaction: discord.Interaction) -> None:
