@@ -133,10 +133,34 @@ async def clear(ctx, amount: int) -> None:
 async def help(interaction: discord.Interaction) -> None:
     return
 
-@bot.tree.command(name="play", description="Play a song")
-async def music(interaction: discord.Interaction, quary: str) -> None:
-    discord.VoiceClient().connect(discord.Client.user)
 
+voice_clients = {}
+yt_dlp_options = {"format":"bestaudio/best"}
+ytdl=yt_dlp.YoutubeDL(yt_dlp_options)
+
+ffmepg_options = {'options':'-vn'}
+@bot.tree.command(name="play", description="Play a song")
+async def music(interaction: discord.Interaction, query: str) -> None:
+    if interaction.user.voice is None:
+        await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
+    else:
+        channel = interaction.user.voice.channel
+        voice_clients[channel.guild.id] = channel
+        await channel.connect()
+
+    try:
+
+        url=query
+        loop=asyncio.get_event_loop()
+        data= await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
+        song=data['url']
+        player = discord.FFmpegPCMAudio(song,**ffmepg_options)
+        voice_clients[interaction.message.voice_client.guild.id].play(player)
+    except Exception as e:
+        logs = open('logs.txt', 'a')
+        print(e, file=logs)
+        print(e)
+        logs.close()
 
 
 @bot.tree.command(name="pause", description="Pause a song")
