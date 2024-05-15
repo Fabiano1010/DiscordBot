@@ -141,55 +141,64 @@ ytdl = youtube_dl.YoutubeDL(yt_dlp_options)
 ffmepg_options = {'options': '-vn'}
 @bot.tree.command(name="play", description="Play a song")
 async def music(interaction: discord.Interaction, query: str) -> None:
-    if interaction.user.voice is None:
-        try:
-            await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
-        except Exception as e:
-            print(e)
-    else:
-        voice_client = await interaction.user.voice.channel.connect()
+    if interaction.user.voice is not None:
 
+        voice_client = await interaction.user.voice.channel.connect()
         try:
             await interaction.response.defer()
             voice_clients[voice_client.guild.id] = voice_client
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
-            # await loop.run_until_complete()
             song = data['url']
 
             embed = discord.Embed(title=data['title'],
                                   description=f"Now playing",
                                   color=discord.Color.dark_red())
             embed.set_thumbnail(url=data['thumbnail'])
-            
+
             await interaction.followup.send(embed=embed)
 
             player = discord.FFmpegPCMAudio(song,**ffmepg_options)
             voice_client.play(player)
-
-
-
-
 
         except Exception as e:
             logs = open('logs.txt', 'a')
             print(e, file=logs)
             print(e)
             logs.close()
+    else:
+        await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
+
 
 
 @bot.tree.command(name="pause", description="Pause a song")
 async def pause(interaction: discord.Interaction) -> None:
-    # try:
-        # voice_clients[voice_client.guild.id].pause()
-    return
+    try:
+        voice_client = interaction.user.voice.channel
+        voice_clients[voice_client.guild.id].pause()
+        embed = discord.Embed(title='PAUSED',
+                              color=discord.Color.dark_green())
+        # embed.set_thumbnail(url="")
+
+        await interaction.response.send_message(embed=embed)
+    except Exception as e:
+        print(e)
 @bot.tree.command(name="skip", description="Skip a song")
 async def skip(interaction: discord.Interaction, number: int=1) -> None:
     return
 
 @bot.tree.command(name="resume", description="Start pasused song")
-async def start(interaction: discord.Interaction) -> None:
-    return
+async def resume(interaction: discord.Interaction) -> None:
+    try:
+        voice_client = interaction.user.voice.channel
+        voice_clients[voice_client.guild.id].resume()
+        embed = discord.Embed(title='RESUMED',
+                              color=discord.Color.dark_blue())
+        # embed.set_thumbnail(url="")
+
+        await interaction.response.send_message(embed=embed)
+    except Exception as e:
+        print(e)
 
 
 
