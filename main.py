@@ -66,6 +66,12 @@ async def on_message(message) -> None:
 # async def on_wavelink_track_end(player:wavelink.Player, track:wavelink.YouTubeTrack,reason) -> None:
 #     return
 
+@bot.event
+async def on_disconnect():
+    await discord.VoiceClient.disconnect()
+    print("Client disconnected")
+
+
 @bot.tree.command(name="ping", description="Sends ping")
 async def ping(interaction: discord.Interaction) -> None:
     await interaction.response.send_message(f'{interaction.user.mention} Pong! {round(bot.latency * 1000)} ms', ephemeral=True)
@@ -171,6 +177,7 @@ async def music(interaction: discord.Interaction, query: str) -> None:
 
 
 
+
 @bot.tree.command(name="pause", description="Pause a song")
 async def pause(interaction: discord.Interaction) -> None:
     try:
@@ -185,7 +192,11 @@ async def pause(interaction: discord.Interaction) -> None:
         print(e)
 @bot.tree.command(name="skip", description="Skip a song")
 async def skip(interaction: discord.Interaction, number: int=1) -> None:
-    return
+    try:
+        voice_client = interaction.user.voice.channel
+        voice_clients[voice_client.guild.id].stop()
+    except Exception as e:
+        print(e)
 
 @bot.tree.command(name="resume", description="Start pasused song")
 async def resume(interaction: discord.Interaction) -> None:
