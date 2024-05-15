@@ -142,26 +142,31 @@ ffmepg_options = {'options': '-vn'}
 @bot.tree.command(name="play", description="Play a song")
 async def music(interaction: discord.Interaction, query: str) -> None:
     if interaction.user.voice is None:
-        await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
+        try:
+            await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
+        except Exception as e:
+            print(e)
     else:
         voice_client = await interaction.user.voice.channel.connect()
 
         try:
-            # await interaction.response.defer(thinking=False)
+            await interaction.response.defer()
             voice_clients[voice_client.guild.id] = voice_client
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
+            # await loop.run_until_complete()
             song = data['url']
 
-            # embed = discord.Embed(title=data['title'],
-            #                       description=f"Now playing",
-            #                       color=discord.Color.dark_red())
-            # embed.set_thumbnail(url=data['thumbnail'])
-            # await interaction.response.send_message(embed=embed)
+            embed = discord.Embed(title=data['title'],
+                                  description=f"Now playing",
+                                  color=discord.Color.dark_red())
+            embed.set_thumbnail(url=data['thumbnail'])
+            
+            await interaction.followup.send(embed=embed)
 
             player = discord.FFmpegPCMAudio(song,**ffmepg_options)
             voice_client.play(player)
-            await interaction.response.send_message(f'This command is only available in voice channels', ephemeral=True)
+
 
 
 
