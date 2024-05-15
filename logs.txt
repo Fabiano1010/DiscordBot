@@ -1,2 +1,24 @@
 ffmpeg was not found.
 ffmpeg was not found.
+ERROR: [generic] 'sdfjhvbbds' is not a valid URL. Set --default-search "ytsearch" (or run  yt-dlp "ytsearch:sdfjhvbbds" ) to search YouTube
+'NoneType' object has no attribute 'voice_client'
+'NoneType' object has no attribute 'voice_client'
+'NoneType' object has no attribute 'channel'
+'VoiceChannel' object has no attribute 'play'
+'NoneType' object has no attribute 'channel'
+play() missing 1 required positional argument: 'source'
+Expected discord.Colour, int, or None but received str instead.
+404 Not Found (error code: 10062): Unknown interaction
+send_message() missing 1 required positional argument: 'self'
+404 Not Found (error code: 10062): Unknown interaction
+'CachedSlotProperty' object has no attribute 'send_message'
+send_message() missing 1 required positional argument: 'self'
+'str' object has no attribute '_response_type'
+'member_descriptor' object has no attribute '_response_type'
+404 Not Found (error code: 10062): Unknown interaction
+404 Not Found (error code: 10062): Unknown interaction
+This interaction has already been responded to before
+This interaction has already been responded to before
+This interaction has already been responded to before
+This interaction has already been responded to before
+404 Not Found (error code: 10062): Unknown interaction
